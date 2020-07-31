@@ -276,14 +276,26 @@ class new_cell:
 		return alfabeto_regular[random.randint(0,26)]
   
 	@staticmethod
-	def translator(letter):
+	def translator(letter: str) -> list:
+		"""Translate a letter to a braille dot pattern, Ex. "a" -> [1, 0, 0, 0, 0, 0], " " -> [0, 0, 0, 0, 0, 0]
+
+		Parameters
+		----------
+		letter : str
+			Input letter to be translated.
+
+		Returns
+		-------
+		braille_letter: list
+			6-value boolean list representing  the input letter
+		"""
 
 		# This function translates a letter to a braille dot pattern
 
 		letter.lower()
 
-		regular_alphabet = "abcdefghijklmnñopqrstuvwxyz"
-		braille_alphabet = [[0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0],[1,0,0,1,0,0,0,0],[1,0,0,1,1,0,0,0],[1,0,0,0,1,0,0,0],[1,1,0,1,0,0,0,0],[1,1,0,1,1,0,0,0],[1,1,0,0,1,0,0,0],[0,1,0,1,0,0,0,0],[0,1,0,1,1,0,0,0],[1,0,1,0,0,0,0,0],[1,1,1,0,0,0,0,0],[1,0,1,1,0,0,0,0],[1,0,1,1,1,0,0,0],[1,1,0,1,1,1,0,0],[1,0,1,0,1,0,0,0],[1,1,1,1,0,0,0,0],[1,1,1,1,1,0,0,0],[1,1,1,0,1,0,0,0],[0,1,1,1,0,0,0,0],[0,1,1,1,1,0,0,0],[1,0,1,0,0,1,0,0],[1,1,1,0,0,1,0,0],[0,1,0,1,1,1,0,0],[1,0,1,1,0,1,0,0],[1,0,1,1,1,1,0,0],[1,0,1,0,1,1,0,0]]
+		regular_alphabet = " abcdefghijklmnñopqrstuvwxyz"
+		braille_alphabet = [[0,0,0,0,0,0],[1,0,0,0,0,0],[1,1,0,0,0,0],[1,0,0,1,0,0],[1,0,0,1,1,0],[1,0,0,0,1,0],[1,1,0,1,0,0],[1,1,0,1,1,0],[1,1,0,0,1,0],[0,1,0,1,0,0],[0,1,0,1,1,0],[1,0,1,0,0,0],[1,1,1,0,0,0],[1,0,1,1,0,0],[1,0,1,1,1,0],[1,1,0,1,1,1],[1,0,1,0,1,0],[1,1,1,1,0,0],[1,1,1,1,1,0],[1,1,1,0,1,0],[0,1,1,1,0,0],[0,1,1,1,1,0],[1,0,1,0,0,1],[1,1,1,0,0,1],[0,1,0,1,1,1],[1,0,1,1,0,1],[1,0,1,1,1,1],[1,0,1,0,1,1]]
 
 		braille_dictionary = dict(zip(regular_alphabet, braille_alphabet))
 
