@@ -54,15 +54,12 @@ class new_cell:
 			A value between 0 and 255
 		"""
 		
-		if value.isdigit():
-			if(value>255):
-				return 255
-			elif(value<0):
-				return 0
-			else:
-				return value
+		if(value>255):
+			return 255
+		elif(value<0):
+			return 0
 		else:
-			raise TypeError("Clamp function's value input must be an integer or a float")
+			return value
 
 	@classmethod
 	def close(cls):
