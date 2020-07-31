@@ -27,14 +27,35 @@ class new_cell:
 			pi.set_mode(pin, GPIO.OUTPUT)
 			pi.write(pin, 0)
 
-	@classmethod
-	def pinout(cls, signal_pin = vibration_pins[0], v1 = vibration_pins[1], v2 = vibration_pins[2], v3 = vibration_pins[3], v4 = vibration_pins[4], v5 = vibration_pins[5], v6 = vibration_pins[6]):
-		""" This function prints the pinout and helps the user change the vibration pinout, the first parameter is the signal pin (pwm) and the v1 to v6 parameters are the i/o pins for each vibrator"""
-		cls.vibration_pins = [signal_pin, v1, v2, v3, v4, v5, v6]
-		for pin in cls.vibration_pins:
+
+	def pinout(self, signal_pin: int=None, d1: int=None, d2: int=None, d3: int=None, d4: int=None, d5: int=None, d6: int=None) -> dict:
+		"""Assign and initialize the braille cell bcm gpio pins
+
+		Parameters
+		----------
+		signal_pin : int, optional
+			Signal gpio pin number (BCM), by default None
+		d1-d6 : int, optional
+			Braille dot gpio pin number (BCM), by default None
+
+		Returns
+		-------
+		pinout: dict
+			Pinout dictionary, Ex. {"signal_pin":18, "d1":4, "d2":17, "d3":27, "d4":22, "d5":23, "d6":24}
+		"""
+		function_arguments = locals()
+
+		for key, value in function_arguments.items():
+			if value is not None and key != "self" and isinstance(value, int):
+				self.vibration_pins[key] = value
+
+		for _, pin in self.vibration_pins.items():
 			new_cell.pi.set_mode(pin, GPIO.OUTPUT)
 			new_cell.pi.write(pin, 0)
-		print("\nPinout\nSignal pin: {}\nVibrator pins: {}".format(cls.vibration_pins[0], cls.vibration_pins[1:]))
+
+		print(f"\nPinout\n{self.vibration_pins}\n")
+
+		return self.vibration_pins
 		
 	@staticmethod
 	def clamp(value: Union[int, float]) -> Union[int, float]:
