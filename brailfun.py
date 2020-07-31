@@ -11,36 +11,34 @@ class new_cell:
 
 	# The default phyisical pins are 12, 7, 11, 13, 15, 16 and 18
 	# The first value is the signal BCM pin (pwm) then the next values are the vibrator BCM pins from 1 to 6
-
-	vibration_pins = [18, 4, 17, 27, 22, 23, 24]
-
-	# GPIO setup
-	pi = GPIO.pi()
-
-	# initializing all the pins in zero
-	for pin in vibration_pins:
-		pi.set_mode(pin, GPIO.OUTPUT)
-		pi.write(pin, 0)
-
-	def __init__(self, power = 5, time_on = 3, time_off = 1, signal_type = 1):
+	def __init__(self, vibration_pins: list=[18, 4, 17, 27, 22, 23, 24], power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
+		self.vibration_pins = vibration_pins
 		self.power = power
 		self.time_on = time_on
 		self.time_off = time_off
 		self.signal_type = signal_type
 
-	@classmethod
-	def pinout(cls, signal_pin = vibration_pins[0], v1 = vibration_pins[1], v2 = vibration_pins[2], v3 = vibration_pins[3], v4 = vibration_pins[4], v5 = vibration_pins[5], v6 = vibration_pins[6]):
-		""" This function prints the pinout and helps the user change the vibration pinout, the first parameter is the signal pin (pwm) and the v1 to v6 parameters are the i/o pins for each vibrator"""
-		cls.vibration_pins = [signal_pin, v1, v2, v3, v4, v5, v6]
+	# GPIO setup
+	pi = GPIO.pi()
 
-		for pin in cls.vibration_pins:
+	# initializing all the pins in zero
+	for pin in self.vibration_pins:
+		pi.set_mode(pin, GPIO.OUTPUT)
+		pi.write(pin, 0)
+
+
+	def pinout(self, signal_pin: int=self.vibration_pins[0], v1: int=self.vibration_pins[1], v2: int=self.vibration_pins[2], v3: int=self.vibration_pins[3], v4: int=vibration_pins[4], v5: int=self.vibration_pins[5], v6: int=self.vibration_pins[6]):
+		""" This function prints the pinout and helps the user change the vibration pinout, the first parameter is the signal pin (pwm) and the v1 to v6 parameters are the i/o pins for each vibrator"""
+		self.vibration_pins = [signal_pin, v1, v2, v3, v4, v5, v6]
+
+		for pin in self.vibration_pins:
 			new_cell.pi.set_mode(pin, GPIO.OUTPUT)
 			new_cell.pi.write(pin, 0)
 
-		print("\nPinout\nSignal pin: {}\nVibrator pins: {}".format(cls.vibration_pins[0], cls.vibration_pins[1:]))
-
+		print(f"\nPinout\nSignal pin: {self.vibration_pins[0]}\nVibrator pins: {self.vibration_pins[1:]}")
+		
 	@staticmethod
-	def clamp(value: Union[int, float]) -> Union[int, float]:
+	def clamp(self, value: Union[int, float]) -> Union[int, float]:
 		"""Limitate the input value between 255 and 0
 
 		Parameters
@@ -50,7 +48,7 @@ class new_cell:
 
 		Returns
 		-------
-		value Union[int, float]
+		value : int, float
 			A value between 0 and 255
 		"""
 		
@@ -66,16 +64,16 @@ class new_cell:
 		"""Stop pigpio session."""
 		cls.pi.stop()
 
-	def s_square(self):
+	def signal_square(self, dot_pattern):
 		#square signal
 
 		output=255*(self.power/5.0)
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0], output)
+		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0], output)
 			
 		time.sleep(self.time_on)
 		
 		output=0
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0], output)
+		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0], output)
 		
 		time.sleep(self.time_off)
 
@@ -101,11 +99,11 @@ class new_cell:
 				
 			
 			output = new_cell.clamp(output)
-			new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 		
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal rampa
@@ -118,10 +116,10 @@ class new_cell:
 		while time.time() <= (t_ini + self.time_on):
 		
 			output = (255*(self.power/5.0))/(self.time_on)*(time.time()-t_ini)
-			new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 					
 		output=0
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal seno
@@ -134,10 +132,10 @@ class new_cell:
 		while time.time() <= (t_ini + self.time_on):
 			
 			output = (255*(self.power/5.0))*math.sin((math.pi/self.time_on)*(time.time()-t_ini))	# In this line we calcule the half cycle of the sin function going from 0 to time_on and having a 255 in amplitude
-			new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 					
 		output=0
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0], output)
+		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0], output)
 		time.sleep(self.time_off)
 
 	#señal logaritmica
@@ -164,10 +162,10 @@ class new_cell:
 			output = new_cell.clamp(output)
 			
 			
-			new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal exponencial
@@ -194,10 +192,10 @@ class new_cell:
 			output = (25.5*math.exp(t_current))*(self.power/5.0)
 			output = new_cell.clamp(output)
 			
-			new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0], output)
+			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0], output)
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal click (logratimica + exponencial)
@@ -225,10 +223,10 @@ class new_cell:
 			
 			output = new_cell.clamp(output)
 			
-			new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal rev-click (exponencial + logartimica)
@@ -255,10 +253,10 @@ class new_cell:
 			
 			output = new_cell.clamp(output)
 			
-			new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
 
@@ -319,7 +317,7 @@ class new_cell:
 		'''
 		
 		for iteration_num in range(6):
-			new_cell.pi.write(new_cell.vibration_pins[iteration_num+1], dot_pattern[iteration_num])
+			new_cell.pi.write(self.vibration_pins[iteration_num+1], dot_pattern[iteration_num])
 
 		if self.signal_type == 1:
 			self.s_square()
@@ -356,7 +354,7 @@ class new_cell:
 			print("Error: wrong signal selector")
 
 		for iteration_num in range(6):
-			new_cell.pi.write(new_cell.vibration_pins[iteration_num+1], 0)
+			new_cell.pi.write(self.vibration_pins[iteration_num+1], 0)
 			
 
 	def generator(self):
