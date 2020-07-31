@@ -63,6 +63,7 @@ class new_cell:
 
 	@classmethod
 	def close(cls):
+		"""Stop pigpio session."""
 		cls.pi.stop()
 
 	def s_square(self):
