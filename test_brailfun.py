@@ -18,5 +18,9 @@ class test_brailfun(unittest.TestCase):
             with self.assertRaises(TypeError):
                 testing_cell.clamp(testcase[index])
 
+    def test_random_letter(self):
+        testcase = "abcdefghijklmnñopqrstuvwxyz"
+        self.assertIn(testing_cell.random_letter(), testcase)
+
 if __name__ == "__main__":
     unittest.main()

@@ -263,9 +263,14 @@ class new_cell:
 
 
 	@staticmethod
-	def randletter():
+	def random_letter() -> str:
+		"""Return a random letter from the alphabet including ñ
 
-		# This function generates a random letter
+		Returns
+		-------
+		random_letter: str
+			Random letter from the alphabet including ñ
+		"""
 
 		alfabeto_regular = "abcdefghijklmnñopqrstuvwxyz"
 		return alfabeto_regular[random.randint(0,26)]
