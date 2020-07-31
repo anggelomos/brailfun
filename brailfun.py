@@ -2,9 +2,7 @@ import pigpio as GPIO
 import math
 import time
 import random
-#import numpy as np
-#from numpy import interp	# To scale values
-
+from typing import Union
 
 # This code uses BCM pins
 # Tested on python 3.5.3
@@ -16,9 +14,10 @@ class new_cell:
 
 	vibration_pins = [18, 4, 17, 27, 22, 23, 24]
 
-	#GPIO setup
+	# GPIO setup
 	pi = GPIO.pi()
 
+	# initializing all the pins in zero
 	for pin in vibration_pins:
 		pi.set_mode(pin, GPIO.OUTPUT)
 		pi.write(pin, 0)
@@ -41,15 +40,29 @@ class new_cell:
 		print("\nPinout\nSignal pin: {}\nVibrator pins: {}".format(cls.vibration_pins[0], cls.vibration_pins[1:]))
 
 	@staticmethod
-	def clamp(value):
-		""" this functiton limitates the value between 0 and 255"""
+	def clamp(value: Union[int, float]) -> Union[int, float]:
+		"""Limitate the input value between 255 and 0
+
+		Parameters
+		----------
+		value : int, float
+			Input value to be truncated
+
+		Returns
+		-------
+		value Union[int, float]
+			A value between 0 and 255
+		"""
 		
-		if(value>255):
-			return 255
-		elif(value<0):
-			return 0
+		if value.isdigit():
+			if(value>255):
+				return 255
+			elif(value<0):
+				return 0
+			else:
+				return value
 		else:
-			return value
+			raise TypeError("Clamp function's value input must be an integer or a float")
 
 	@classmethod
 	def close(cls):
@@ -69,7 +82,6 @@ class new_cell:
 		time.sleep(self.time_off)
 
 	#señal triangular
-
 	def s_triad(self):
 
 		t_ini = time.time()
@@ -98,9 +110,23 @@ class new_cell:
 		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
+	#señal rampa
+	def s_ramp(self):
+		
+		t_ini = time.time()
+		
+		# In this cycle the vibration signal is calculated and activated through a pwm signal
+		
+		while time.time() <= (t_ini + self.time_on):
+		
+			output = (255*(self.power/5.0))/(self.time_on)*(time.time()-t_ini)
+			new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+					
+		output=0
+		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
+		time.sleep(self.time_off)
 
 	#señal seno
-
 	def s_sine(self):
 		
 		t_ini = time.time()
@@ -116,9 +142,7 @@ class new_cell:
 		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0], output)
 		time.sleep(self.time_off)
 
-
 	#señal logaritmica
-	
 	def s_log(self):
 		t_ini = time.time()
 		
@@ -148,9 +172,7 @@ class new_cell:
 		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
-
 	#señal exponencial
-	
 	def s_exp(self):
 		
 		t_ini = time.time()
@@ -180,9 +202,7 @@ class new_cell:
 		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
-
 	#señal click (logratimica + exponencial)
-	
 	def s_click(self):
 		
 		t_ini = time.time()
@@ -213,9 +233,7 @@ class new_cell:
 		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
-
 	#señal rev-click (exponencial + logartimica)
-
 	def s_revclick(self):
 		
 		t_ini = time.time()
@@ -245,23 +263,6 @@ class new_cell:
 		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
 		time.sleep(self.time_off)
 
-
-	#señal rampa
-	
-	def s_ramp(self):
-		
-		t_ini = time.time()
-		
-		# In this cycle the vibration signal is calculated and activated through a pwm signal
-		
-		while time.time() <= (t_ini + self.time_on):
-		
-			output = (255*(self.power/5.0))/(self.time_on)*(time.time()-t_ini)
-			new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
-					
-		output=0
-		new_cell.pi.set_PWM_dutycycle(new_cell.vibration_pins[0],output)
-		time.sleep(self.time_off)
 
 	@staticmethod
 	def randletter():
@@ -362,7 +363,7 @@ class new_cell:
 			self.trigger(caracter_braille)
 
 
-	def randomvib(self):
+	def random_vibration(self):
 		
 		# This function actives dots randomly in the cell
 		
@@ -372,9 +373,4 @@ class new_cell:
 			vector_random[dot] = random.randint(0,1)
 		
 		self.trigger(vector_random)
-
-
-
-	
-	
 
