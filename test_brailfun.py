@@ -12,11 +12,11 @@ class test_brailfun(unittest.TestCase):
             self.assertEqual(testing_cell.clamp(testcase[index]), expected[index])
 
     def test_clamp_function_02(self):
-        testcase = ["a", j, ["a"], {"a"}, ("a")]
+        testcase = ["a", ["a"], {"a"}, set("a"), ("a")]
         expected = []
         for index, _ in enumerate(testcase):
             with self.assertRaises(TypeError):
-                testing_cell.clamp(testcase[index]), expected[index]
+                testing_cell.clamp(testcase[index])
 
 if __name__ == "__main__":
     unittest.main()
