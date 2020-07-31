@@ -11,8 +11,8 @@ class new_cell:
 
 	# The default phyisical pins are 12, 7, 11, 13, 15, 16 and 18
 	# The first value is the signal BCM pin (pwm) then the next values are the vibrator BCM pins from 1 to 6
-	def __init__(self, vibration_pins: dict={"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}, power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
-		self.vibration_pins = vibration_pins
+	def __init__(self, braille_pins: dict={"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}, power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
+		self.braille_pins = braille_pins
 		self.power = power
 		self.time_on = time_on
 		self.time_off = time_off
@@ -23,7 +23,7 @@ class new_cell:
 
 	def init(self):
 		"""Initialize all the pins."""
-		for pin in self.vibration_pins:
+		for pin in self.braille_pins:
 			pi.set_mode(pin, GPIO.OUTPUT)
 			pi.write(pin, 0)
 
@@ -47,15 +47,15 @@ class new_cell:
 
 		for key, value in function_arguments.items():
 			if value is not None and key != "self" and isinstance(value, int):
-				self.vibration_pins[key] = value
+				self.braille_pins[key] = value
 
-		for _, pin in self.vibration_pins.items():
+		for _, pin in self.braille_pins.items():
 			new_cell.pi.set_mode(pin, GPIO.OUTPUT)
 			new_cell.pi.write(pin, 0)
 
-		print(f"\nPinout\n{self.vibration_pins}\n")
+		print(f"\nPinout\n{self.braille_pins}\n")
 
-		return self.vibration_pins
+		return self.braille_pins
 		
 	@staticmethod
 	def clamp(value: Union[int, float]) -> Union[int, float]:
@@ -88,12 +88,12 @@ class new_cell:
 		#square signal
 
 		output=255*(self.power/5.0)
-		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0], output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0], output)
 			
 		time.sleep(self.time_on)
 		
 		output=0
-		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0], output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0], output)
 		
 		time.sleep(self.time_off)
 
@@ -119,11 +119,11 @@ class new_cell:
 				
 			
 			output = new_cell.clamp(output)
-			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 		
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal rampa
@@ -136,10 +136,10 @@ class new_cell:
 		while time.time() <= (t_ini + self.time_on):
 		
 			output = (255*(self.power/5.0))/(self.time_on)*(time.time()-t_ini)
-			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 					
 		output=0
-		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal seno
@@ -152,10 +152,10 @@ class new_cell:
 		while time.time() <= (t_ini + self.time_on):
 			
 			output = (255*(self.power/5.0))*math.sin((math.pi/self.time_on)*(time.time()-t_ini))	# In this line we calcule the half cycle of the sin function going from 0 to time_on and having a 255 in amplitude
-			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 					
 		output=0
-		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0], output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0], output)
 		time.sleep(self.time_off)
 
 	#señal logaritmica
@@ -182,10 +182,10 @@ class new_cell:
 			output = new_cell.clamp(output)
 			
 			
-			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal exponencial
@@ -212,10 +212,10 @@ class new_cell:
 			output = (25.5*math.exp(t_current))*(self.power/5.0)
 			output = new_cell.clamp(output)
 			
-			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0], output)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0], output)
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal click (logratimica + exponencial)
@@ -243,10 +243,10 @@ class new_cell:
 			
 			output = new_cell.clamp(output)
 			
-			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 		time.sleep(self.time_off)
 
 	#señal rev-click (exponencial + logartimica)
@@ -273,10 +273,10 @@ class new_cell:
 			
 			output = new_cell.clamp(output)
 			
-			new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 			
 		output=0
-		new_cell.pi.set_PWM_dutycycle(self.vibration_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
 		time.sleep(self.time_off)
 
 
@@ -337,7 +337,7 @@ class new_cell:
 		'''
 		
 		for iteration_num in range(6):
-			new_cell.pi.write(self.vibration_pins[iteration_num+1], dot_pattern[iteration_num])
+			new_cell.pi.write(self.braille_pins[iteration_num+1], dot_pattern[iteration_num])
 
 		if self.signal_type == 1:
 			self.s_square()
@@ -374,7 +374,7 @@ class new_cell:
 			print("Error: wrong signal selector")
 
 		for iteration_num in range(6):
-			new_cell.pi.write(self.vibration_pins[iteration_num+1], 0)
+			new_cell.pi.write(self.braille_pins[iteration_num+1], 0)
 			
 
 	def generator(self):
