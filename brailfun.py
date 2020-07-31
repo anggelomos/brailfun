@@ -11,7 +11,7 @@ class new_cell:
 
 	# The default phyisical pins are 12, 7, 11, 13, 15, 16 and 18
 	# The first value is the signal BCM pin (pwm) then the next values are the vibrator BCM pins from 1 to 6
-	def __init__(self, vibration_pins: list=[18, 4, 17, 27, 22, 23, 24], power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
+	def __init__(self, vibration_pins: dict={"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}, power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
 		self.vibration_pins = vibration_pins
 		self.power = power
 		self.time_on = time_on
@@ -21,24 +21,23 @@ class new_cell:
 	# GPIO setup
 	pi = GPIO.pi()
 
-	# initializing all the pins in zero
-	for pin in self.vibration_pins:
-		pi.set_mode(pin, GPIO.OUTPUT)
-		pi.write(pin, 0)
-
-
-	def pinout(self, signal_pin: int=self.vibration_pins[0], v1: int=self.vibration_pins[1], v2: int=self.vibration_pins[2], v3: int=self.vibration_pins[3], v4: int=vibration_pins[4], v5: int=self.vibration_pins[5], v6: int=self.vibration_pins[6]):
-		""" This function prints the pinout and helps the user change the vibration pinout, the first parameter is the signal pin (pwm) and the v1 to v6 parameters are the i/o pins for each vibrator"""
-		self.vibration_pins = [signal_pin, v1, v2, v3, v4, v5, v6]
-
+	def init(self):
+		"""Initialize all the pins."""
 		for pin in self.vibration_pins:
+			pi.set_mode(pin, GPIO.OUTPUT)
+			pi.write(pin, 0)
+
+	@classmethod
+	def pinout(cls, signal_pin = vibration_pins[0], v1 = vibration_pins[1], v2 = vibration_pins[2], v3 = vibration_pins[3], v4 = vibration_pins[4], v5 = vibration_pins[5], v6 = vibration_pins[6]):
+		""" This function prints the pinout and helps the user change the vibration pinout, the first parameter is the signal pin (pwm) and the v1 to v6 parameters are the i/o pins for each vibrator"""
+		cls.vibration_pins = [signal_pin, v1, v2, v3, v4, v5, v6]
+		for pin in cls.vibration_pins:
 			new_cell.pi.set_mode(pin, GPIO.OUTPUT)
 			new_cell.pi.write(pin, 0)
-
-		print(f"\nPinout\nSignal pin: {self.vibration_pins[0]}\nVibrator pins: {self.vibration_pins[1:]}")
+		print("\nPinout\nSignal pin: {}\nVibrator pins: {}".format(cls.vibration_pins[0], cls.vibration_pins[1:]))
 		
 	@staticmethod
-	def clamp(self, value: Union[int, float]) -> Union[int, float]:
+	def clamp(value: Union[int, float]) -> Union[int, float]:
 		"""Limitate the input value between 255 and 0
 
 		Parameters
