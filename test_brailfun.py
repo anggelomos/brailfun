@@ -1,7 +1,7 @@
 import unittest
 from brailfun import new_cell
 
-testing_cell = new_cell(power=5, time_on=1, time_off=1)
+testing_cell = new_cell(power=5, time_on=0.5, time_off=0)
 
 class test_brailfun(unittest.TestCase):
 
@@ -38,15 +38,6 @@ class test_brailfun(unittest.TestCase):
         testcase = testing_cell.pinout(d1="hola", d2={23}, d5=[3])
         expected = {"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}
         self.assertEqual(testcase, expected)
-
-    def test_signal_square(self):
-        testing_cell.time_on = 0
-        testing_cell.time_off = 0
-        testcase = testing_cell.signal_square([1,0,0,0,0,0])
-        expected = 255
-        self.assertAlmostEqual(testcase, expected)
-        testing_cell.time_on = 1
-        testing_cell.time_off = 1
 
 if __name__ == "__main__":
     unittest.main()
