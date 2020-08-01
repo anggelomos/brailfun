@@ -39,5 +39,14 @@ class test_brailfun(unittest.TestCase):
         expected = {"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}
         self.assertEqual(testcase, expected)
 
+    def test_signal_square(self):
+        testing_cell.time_on = 0
+        testing_cell.time_off = 0
+        testcase = testing_cell.signal_square([1,0,0,0,0,0])
+        expected = 255
+        self.assertAlmostEqual(testcase, expected)
+        testing_cell.time_on = 1
+        testing_cell.time_off = 1
+
 if __name__ == "__main__":
     unittest.main()
