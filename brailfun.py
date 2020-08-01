@@ -84,18 +84,38 @@ class new_cell:
 		"""Stop pigpio session."""
 		cls.pi.stop()
 
-	def signal_square(self, dot_pattern):
-		#square signal
+	def signal_square(self, braille_pattern: list):
+		"""Activate a braille pattern with a square signal for time_on seconds and then waits for time_off seconds
 
-		output=255*(self.power/5.0)
-		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0], output)
+		Parameters
+		----------
+		braille_pattern : list(bool)
+			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't
+
+		Returns
+		-------
+		signal_value: int
+					
+		"""
+
+		signal_value=255*(self.power/5.0)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 255*braille_pattern[index-1])
 			
 		time.sleep(self.time_on)
 		
-		output=0
-		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0], output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], 0)
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 0)
 		
 		time.sleep(self.time_off)
+
+		return signal_value
 
 	#señal triangular
 	def s_triad(self):
