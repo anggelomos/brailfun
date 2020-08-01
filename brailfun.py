@@ -29,19 +29,19 @@ class new_cell:
 
 
 	def pinout(self, signal_pin: int=None, d1: int=None, d2: int=None, d3: int=None, d4: int=None, d5: int=None, d6: int=None) -> dict:
-		"""Assign and initialize the braille cell bcm gpio pins
+		"""Assign and initialize the braille cell bcm gpio pins.
 
 		Parameters
 		----------
 		signal_pin : int, optional
-			Signal gpio pin number (BCM), by default None
+			Signal gpio pin number (BCM), by default None.
 		d1-d6 : int, optional
-			Braille dot gpio pin number (BCM), by default None
+			Braille dot gpio pin number (BCM), by default None.
 
 		Returns
 		-------
 		pinout: dict
-			Pinout dictionary, Ex. {"signal_pin":18, "d1":4, "d2":17, "d3":27, "d4":22, "d5":23, "d6":24}
+			Pinout dictionary, Ex. {"signal_pin":18, "d1":4, "d2":17, "d3":27, "d4":22, "d5":23, "d6":24}.
 		"""
 		function_arguments = locals()
 
@@ -59,17 +59,17 @@ class new_cell:
 		
 	@staticmethod
 	def clamp(value: Union[int, float]) -> Union[int, float]:
-		"""Limitate the input value between 255 and 0
+		"""Limitate the input value between 255 and 0.
 
 		Parameters
 		----------
 		value : int, float
-			Input value to be truncated
+			Input value to be truncated.
 
 		Returns
 		-------
 		value : int, float
-			A value between 0 and 255
+			A value between 0 and 255.
 		"""
 		
 		if(value>255):
@@ -84,18 +84,18 @@ class new_cell:
 		"""Stop pigpio session."""
 		cls.pi.stop()
 
-	def signal_square(self, braille_pattern: list):
-		"""Activate a braille pattern with a square signal for time_on seconds and then waits for time_off seconds
+	def signal_square(self, braille_pattern: list) -> int:
+		"""Activate a braille pattern with a square signal for time_on seconds and then waits for time_off seconds.
 
 		Parameters
 		----------
 		braille_pattern : list(bool)
-			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't
+			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't.
 
 		Returns
 		-------
 		signal_value: int
-					
+
 		"""
 
 		signal_value=255*(self.power/5.0)
@@ -117,34 +117,49 @@ class new_cell:
 
 		return signal_value
 
-	#señal triangular
-	def s_triad(self):
 
+	def signal_triangle(self, braille_pattern: list) -> list:
+		"""Activate a braille pattern with a triangle signal for time_on seconds and then waits for time_off seconds.
+
+		Parameters
+		----------
+		braille_pattern : list(bool)
+			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't.
+
+		Returns
+		-------
+		signal: list
+			List with the values the signal takes over time.
+		"""
+
+		signal = []
 		t_ini = time.time()
 		
-		# In this cycle the vibration signal is calculated and activated through a pwm signal
-		
-		while time.time() <= (t_ini + self.time_on):
-			
-			if time.time() < (t_ini + self.time_on/2.0):
-				# First half of the cycle, t_current is calculated from 0 to time_on/2
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 255*braille_pattern[index-1])
 
-				output = (255*(self.power/5.0))/(self.time_on/2.0)*(time.time()-t_ini)  # Here we calculate the output based on the line equation
-				t_ini1 = time.time() 													# Aux variable to know the exact moment when the first cycle ends
-				
+		while time.time() <= (t_ini + self.time_on):
+
+			if time.time() < (t_ini + self.time_on/2.0):
+				signal_value = (255*(self.power/5.0))/(self.time_on/2.0)*(time.time()-t_ini)  
+				t_ini1 = time.time() 													
 			else:
-		
-				# Second half of the cycle, t_current is calculated from time_on/2 to time_on
-				output = -(255*(self.power/5.0))/(self.time_on/2.0)*(time.time()-t_ini1)+(255*(self.power/5.0))
-				
+				signal_value = (255*(self.power/5.0))-(255*(self.power/5.0))/(self.time_on/2.0)*(time.time()-t_ini1)
 			
-			output = new_cell.clamp(output)
-			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
-		
+			signal_value = new_cell.clamp(signal_value)
+			signal.append(signal_value)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
-		output=0
-		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], 0)
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 0)
 		time.sleep(self.time_off)
+
+		return signal
 
 	#señal rampa
 	def s_ramp(self):
