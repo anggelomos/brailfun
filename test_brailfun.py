@@ -23,8 +23,8 @@ class test_brailfun(unittest.TestCase):
         self.assertIn(testing_cell.random_letter(), testcase)
 
     def test_translator(self):
-        testcase = [" ","a", "j", "s", "w"]
-        expected = [[0,0,0,0,0,0],[1,0,0,0,0,0], [0,1,0,1,1,0], [0,1,1,1,0,0], [0,1,0,1,1,1]]
+        testcase = [" ","a", "j", "s", "w", "á", "ñ"]
+        expected = [[0,0,0,0,0,0],[1,0,0,0,0,0], [0,1,0,1,1,0], [0,1,1,1,0,0], [0,1,0,1,1,1], [1,0,0,0,0,0], [1,1,0,1,1,1]]
         for index, _ in enumerate(testcase):
             self.assertEqual(testing_cell.translator(testcase[index]), expected[index])
 
