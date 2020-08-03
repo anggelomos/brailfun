@@ -117,7 +117,6 @@ class new_cell:
 
 		return signal_value
 
-
 	def signal_triangle(self, braille_pattern: list) -> list:
 		"""Activate a braille pattern with a triangle signal for time_on seconds and then waits for time_off seconds.
 
@@ -141,7 +140,6 @@ class new_cell:
 			new_cell.pi.set_PWM_dutycycle(value, 255*braille_pattern[index-1])
 
 		while time.time() <= (t_ini + self.time_on):
-
 			if time.time() < (t_ini + self.time_on/2.0):
 				signal_value = (255*(self.power/5.0))/(self.time_on/2.0)*(time.time()-t_ini)  
 				t_ini1 = time.time() 													
@@ -157,85 +155,158 @@ class new_cell:
 			if index == 0:
 				continue
 			new_cell.pi.set_PWM_dutycycle(value, 0)
+
 		time.sleep(self.time_off)
 
 		return signal
 
-	#señal rampa
-	def s_ramp(self):
-		
+	def signal_ramp(self, braille_pattern: list) -> list:
+		"""Activate a braille pattern with a ramp signal for time_on seconds and then waits for time_off seconds.
+
+		Parameters
+		----------
+		braille_pattern : list(bool)
+			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't.
+
+		Returns
+		-------
+		signal: list
+			List with the values the signal takes over time.
+		"""
+
+		signal = []
 		t_ini = time.time()
 		
-		# In this cycle the vibration signal is calculated and activated through a pwm signal
-		
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 255*braille_pattern[index-1])
+
 		while time.time() <= (t_ini + self.time_on):
-		
-			output = (255*(self.power/5.0))/(self.time_on)*(time.time()-t_ini)
-			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
+			signal_value = (255*(self.power/5.0))/(self.time_on)*(time.time()-t_ini)
+
+			signal_value = new_cell.clamp(signal_value)
+			signal.append(signal_value)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 					
-		output=0
-		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
+
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], 0)
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 0)
+
 		time.sleep(self.time_off)
 
-	#señal seno
-	def s_sine(self):
-		
+		return signal
+
+	def signal_sine(self, braille_pattern: list) -> list:
+		"""Activate a braille pattern with a sine signal (positive side) for time_on seconds and then waits for time_off seconds.
+
+		Parameters
+		----------
+		braille_pattern : list(bool)
+			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't.
+
+		Returns
+		-------
+		signal: list
+			List with the values the signal takes over time.
+		"""
+
+		signal = []
 		t_ini = time.time()
 		
-		# In this cycle the vibration signal is calculated and activated through a pwm signal
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 255*braille_pattern[index-1])
 		
 		while time.time() <= (t_ini + self.time_on):
+			signal_value = (255*(self.power/5.0))*math.sin((math.pi/self.time_on)*(time.time()-t_ini))
 			
-			output = (255*(self.power/5.0))*math.sin((math.pi/self.time_on)*(time.time()-t_ini))	# In this line we calcule the half cycle of the sin function going from 0 to time_on and having a 255 in amplitude
-			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
-					
-		output=0
-		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0], output)
+			signal_value = new_cell.clamp(signal_value)
+			signal.append(signal_value)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
+
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], 0)
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 0)
+
 		time.sleep(self.time_off)
 
-	#señal logaritmica
-	def s_log(self):
+		return signal
+
+	def signal_log(self, braille_pattern: list) -> list:
+		"""Activate a braille pattern with a logarithmic signal for time_on seconds and then waits for time_off seconds.
+
+		Parameters
+		----------
+		braille_pattern : list(bool)
+			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't.
+
+		Returns
+		-------
+		signal: list
+			List with the values the signal takes over time.
+		"""
+
+		signal = []
 		t_ini = time.time()
 		
-		# In this cycle the vibration signal is calculated and activated through a pwm signal
+		
 		
 		while time.time() <= (t_ini + self.time_on):
-			
 			if time.time() < (t_ini + self.time_on/2.0):
-				# First half of the cycle, t_current is calculated from 0 to time_on/2
-
-				t_current = (2*(10-1)/(self.time_on))*(time.time() - t_ini) + 1 	# In this line we remap the time so that is goes from 1 to 10
+				t_current = (2*(10-1)/(self.time_on))*(time.time() - t_ini) + 1 	
 				t_ini1 = time.time()
 				
-			else:
-				# Second half of the cycle, t_current is calculated from time_on/2 to time_on
-				
-				t_current = (2*(1-10)/(self.time_on))*(time.time() - t_ini1) + 10 	# In this line we remap the time so that is goes from 10 to 1
+			else:				
+				t_current = (2*(1-10)/(self.time_on))*(time.time() - t_ini1) + 10
 					
-					
-			output = (255.0*math.log10(t_current))*(self.power/5.0)
-			output = new_cell.clamp(output)
+			signal_value = (255.0*math.log10(t_current))*(self.power/5.0)
 			
+			signal_value = new_cell.clamp(signal_value)
+			signal.append(signal_value)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
-			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
-			
-		output=0
-		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], 0)
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 0)
+
 		time.sleep(self.time_off)
 
-	#señal exponencial
-	def s_exp(self):
-		
+		return signal
+
+	def signal_exp(self, braille_pattern: list) -> list:
+		"""Activate a braille pattern with a exponential signal for time_on seconds and then waits for time_off seconds.
+
+		Parameters
+		----------
+		braille_pattern : list(bool)
+			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't.
+
+		Returns
+		-------
+		signal: list
+			List with the values the signal takes over time.
+		"""
+
+		signal = []
 		t_ini = time.time()
 		
-		# In this cycle the vibration signal is calculated and activated through a pwm signal
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 255*braille_pattern[index-1])
 		
 		while time.time() <= (t_ini + self.time_on):
-			
 			if time.time() < (t_ini + self.time_on/2.0):
-				# First half of the cycle, t_current is calculated from 0 to time_on/2
-
-				t_current = (2*(math.log(10)-(-math.log(10)))/(self.time_on))*(time.time() - t_ini) + (-math.log(10)) # In this line we remap the time so that is goes from -ln(10) to ln(10)
+				t_current = (2*(math.log(10)-(-math.log(10)))/(self.time_on))*(time.time() - t_ini) + (-math.log(10)) 
 				t_ini1 = time.time()
 				
 			else:
@@ -244,76 +315,113 @@ class new_cell:
 				t_current = (2*((-math.log(10))-math.log(10))/(self.time_on))*(time.time() - t_ini1) + math.log(10) # In this line we remap the time so that is goes from ln(10) to -ln(10)
 					
 					
-			output = (25.5*math.exp(t_current))*(self.power/5.0)
-			output = new_cell.clamp(output)
+			signal_value = (25.5*math.exp(t_current))*(self.power/5.0)
 			
-			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0], output)
+			signal_value = new_cell.clamp(signal_value)
+			signal.append(signal_value)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
-		output=0
-		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], 0)
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 0)
+
 		time.sleep(self.time_off)
 
-	#señal click (logratimica + exponencial)
-	def s_click(self):
+		return signal
+
+	def signal_click(self, braille_pattern: list) -> list:
+		"""Activate a braille pattern with a click signal (first half logarithmic, second half exponential) for time_on seconds and then waits for time_off seconds.
+
+		Parameters
+		----------
+		braille_pattern : list(bool)
+			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't.
+
+		Returns
+		-------
+		signal: list
+			List with the values the signal takes over time.
+		"""
 		
+		signal = []
 		t_ini = time.time()
 		
-		# In this cycle the vibration signal is calculated and activated through a pwm signal
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 255*braille_pattern[index-1])
 		
 		while time.time() <= (t_ini + self.time_on):
 			
-			if time.time() < (t_ini + self.time_on/2.0):
-				# First half of the cycle, t_current is calculated from 0 to time_on/2 
-				
-				t_current = (2*(10-1)/(self.time_on))*(time.time() - t_ini) + 1 # In this line we remap the time so that is goes from 10 to 1
-				output = (255.0*math.log10(t_current))*(self.power/5.0)
+			if time.time() < (t_ini + self.time_on/2.0):				
+				t_current = (2*(10-1)/(self.time_on))*(time.time() - t_ini) + 1 
+				signal_value = (255.0*math.log10(t_current))*(self.power/5.0)
 				t_ini1 = time.time()
 				
-			else:
-				# Second half of the cycle, t_current is calculated from time_on/2 to time_on
-				
+			else:				
 				t_current = (2*((-math.log(10))-math.log(10))/(self.time_on))*(time.time() - t_ini1) + math.log(10) # In this line we remap the time so that is goes from -ln(10) to ln(10)
-				output = (25.5*math.exp(t_current))*(self.power/5.0)
+				signal_value = (25.5*math.exp(t_current))*(self.power/5.0)
 					
+			signal_value = new_cell.clamp(signal_value)
+			signal.append(signal_value)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
-			output = new_cell.clamp(output)
-			
-			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
-			
-		output=0
-		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], 0)
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 0)
+
 		time.sleep(self.time_off)
 
-	#señal rev-click (exponencial + logartimica)
-	def s_revclick(self):
-		
+		return signal
+
+	def signal_revclick(self, braille_pattern: list) -> list:
+		"""Activate a braille pattern with a click signal (first half exponential, second half logarithmic) for time_on seconds and then waits for time_off seconds.
+
+		Parameters
+		----------
+		braille_pattern : list(bool)
+			6-value braille pattern list, 1 means the braille dot is activated and 0 means it isn't.
+
+		Returns
+		-------
+		signal: list
+			List with the values the signal takes over time.
+		"""
+
+		signal = []
 		t_ini = time.time()
 		
-		# In this cycle the vibration signal is calculated and activated through a pwm signal
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 255*braille_pattern[index-1])
 		
 		while time.time() <= (t_ini + self.time_on):
-			
 			if time.time() < (t_ini + self.time_on/2.0):
-				# First half of the cycle, t_current is calculated from 0 to time_on/2
-				
-				t_current = (2*(math.log(10)-(-math.log(10)))/(self.time_on))*(time.time() - t_ini) + (-math.log(10)) # In this line we remap the time so that is goes from -ln(10) to ln(10)
+				t_current = (2*(math.log(10)-(-math.log(10)))/(self.time_on))*(time.time() - t_ini) + (-math.log(10))
 				t_ini1 = time.time()
-				output = (25.5*math.exp(t_current))*(self.power/5.0)
+				signal_value = (25.5*math.exp(t_current))*(self.power/5.0)
 			else:
-				# Second half of the cycle, t_current is calculated from time_on/2 to time_on
-
-				t_current = (2*(1-10)/(self.time_on))*(time.time() - t_ini1) + 10 # In this line we remap the time so that is goes from 10 to 1
-				output = (255.0*math.log10(t_current))*(self.power/5.0)
+				t_current = (2*(1-10)/(self.time_on))*(time.time() - t_ini1) + 10
+				signal_value = (255.0*math.log10(t_current))*(self.power/5.0)
 					
+			signal_value = new_cell.clamp(signal_value)
+			signal.append(signal_value)
+			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
-			output = new_cell.clamp(output)
-			
-			new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
-			
-		output=0
-		new_cell.pi.set_PWM_dutycycle(self.braille_pins[0],output)
+		new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], 0)
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			new_cell.pi.set_PWM_dutycycle(value, 0)
+
 		time.sleep(self.time_off)
 
+		return signal
 
 	@staticmethod
 	def random_letter() -> str:
