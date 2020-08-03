@@ -37,9 +37,28 @@ class new_cell:
 
 	Methods
 	-------
-	[type]
-		[description]
+	init
+		Initialize all the pins.
+	
+	close
+		Stop pigpio session.
+		
+	pinout
+		Assign and initialize the braille cell bcm gpio pins.
+
+	parameters
+		Change braille cell attributes.
+
+	writer
+		Write the text in the braille cell activating consecutively each alphanumer letter.
+
+	random_letter
+		Write a random letter in the braille cell.
+
+	random_vibration
+		Generate a random braille pattern and activate it in the braille cell.
 	"""
+
 	def __init__(self, braille_pins: dict={"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}, power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
 		self.braille_pins = braille_pins
 		self.power = power
