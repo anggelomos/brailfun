@@ -498,15 +498,14 @@ class new_cell:
 			print("ERROR: Wrong signal selector")
 
 	def generator(self):
+		"""Activates each dot in the braille cell consecutively."""
 		
-		# This function activates all the dots in the cell going one by one
-		
-		for active_dot in range(0,6):
+		for active_dot in range(6):
 			vector_generador = [0,0,0,0,0,0]
 			vector_generador[active_dot] = 1
 			self.trigger(vector_generador)
 		
-			
+
 	def writer(self, sentence):
 		
 		# This function writes the sentence in the braille cell, the sentence can be a letter, a word or a paragraph.
