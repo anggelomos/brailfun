@@ -588,10 +588,26 @@ class new_cell:
 		
 		for letter in text:
 			if letter.isalpha() or letter == " ":
-				caracter_braille = self.translator(letter)
-				self.trigger(caracter_braille)
+				caracter_braille = self._translator(letter)
+				self._trigger(caracter_braille)
 			else:
 				pass
+
+	def random_letter(self) -> str:
+		"""Write a random letter in the braille cell
+
+		Returns
+		-------
+		random_letter: str
+			Random letter from the alphabet including ñ
+		"""
+
+		alfabeto_regular = "abcdefghijklmnñopqrstuvwxyz"
+		letter = alfabeto_regular[random.randint(0,26)]
+		braille_letter = self._translator(letter)
+		self._trigger(braille_letter)
+
+		return letter
 
 	def random_vibration(self):
 		"""Generate a random braille pattern and activate it in the braille cell."""
