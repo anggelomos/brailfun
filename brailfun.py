@@ -462,63 +462,40 @@ class new_cell:
 
 		return braille_dictionary[letter]
 
-	
-	def trigger(self, dot_pattern):
-			
-		'''This function triggers the actuator
+	def trigger(self, dot_pattern: list):
+		"""Activate the braille cell according to the cell parameters and the dot pattern
 		
-			V_braille   ==> braille pattern, it's a boolean array with 6 values, ex {1,0,0,1,1,0}
-			signal      ==> type of vibratino signal, it's a number between 1 and 8,    1 - Square signal
-																						2 - Triangle signal
-																						3 - Click signal (logarithmic + exponential)
-																						4 - Ramp signal
-																						5 - Exponential signal
-																						6 - Sin signal
-																						7 - Reverse click signal (exponential + logarithmic)
-																						8 - logarithmic signal
-																						
-		'''
+		Parameters
+		----------
+		dot_pattern : list
+			Boolean braille pattern where 1 means active and zero means unactive, Ex. [1, 0, 1, 1, 0, 0]
+		"""
 		
-		for iteration_num in range(6):
-			new_cell.pi.write(self.braille_pins[iteration_num+1], dot_pattern[iteration_num])
-
 		if self.signal_type == 1:
-			self.s_square()
+			self.signal_square(dot_pattern)
 			
 		elif self.signal_type == 2:
-			
-			self.s_triad()
-			
-		elif self.signal_type == 6:
-			
-			self.s_sine()
-			
-		elif self.signal_type == 8:
-			
-			self.s_log()
-			
-		elif self.signal_type == 5:
-			
-			self.s_exp()
+			self.signal_triangle(dot_pattern)
 			
 		elif self.signal_type == 3:
-			
-			self.s_click()
-			
-		elif self.signal_type == 7:
-			
-			self.s_revclick()
+			self.signal_sine(dot_pattern)
 			
 		elif self.signal_type == 4:
+			self.signal_log(dot_pattern)
 			
-			self.s_ramp()
+		elif self.signal_type == 5:
+			self.signal_exp(dot_pattern)
 			
-		else:
-			print("Error: wrong signal selector")
+		elif self.signal_type == 6:
+			self.signal_click(dot_pattern)
 
-		for iteration_num in range(6):
-			new_cell.pi.write(self.braille_pins[iteration_num+1], 0)
-			
+		elif self.signal_type == 7:			
+			self.signal_revclick(dot_pattern)	
+
+		elif self.signal_type == 8:			
+			self.signal_ramp(dot_pattern)			
+		else:
+			print("ERROR: Wrong signal selector")
 
 	def generator(self):
 		
