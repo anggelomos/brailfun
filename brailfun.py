@@ -40,8 +40,6 @@ class new_cell:
 	[type]
 		[description]
 	"""
-	# The default phyisical pins are 12, 7, 11, 13, 15, 16 and 18
-	# The first value is the signal BCM pin (pwm) then the next values are the vibrator BCM pins from 1 to 6
 	def __init__(self, braille_pins: dict={"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}, power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
 		self.braille_pins = braille_pins
 		self.power = power
@@ -112,12 +110,18 @@ class new_cell:
 				6 - Sine signal
 				7 - Click signal (logarithmic + exponential)
 				8 - Reverse click signal (exponential + logarithmic)
-
-		Returns
-		-------
-		[type]
-			[description]
 		"""
+		if isinstance(power, int):
+			self.power = power
+		
+		if isinstance(time_on, float):
+			self.time_on = time_on
+
+		if isinstance(time_off, float):
+			self.time_off = time_off
+
+		if isinstance(signal_type, int):
+			self.signal_type = signal_type
 
 	@staticmethod
 	def clamp(value: Union[int, float]) -> Union[int, float]:
