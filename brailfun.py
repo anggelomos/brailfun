@@ -75,7 +75,7 @@ class new_cell:
 		function_arguments = locals()
 
 		for key, value in function_arguments.items():
-			if value is not None and key != "self" and isinstance(value, int):
+			if key != "self" and isinstance(value, int):
 				self.braille_pins[key] = value
 
 		for _, pin in self.braille_pins.items():
