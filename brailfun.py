@@ -2,6 +2,7 @@ import pigpio as GPIO
 import math
 import time
 import random
+import unicodedata
 from typing import Union
 
 # This code uses BCM pins
@@ -451,16 +452,17 @@ class new_cell:
 			6-value boolean list representing  the input letter
 		"""
 
-		# This function translates a letter to a braille dot pattern
-
-		letter.lower()
+		letter = letter.lower()
+		if letter == "ñ":
+			clean_letter = "ñ"
+		else:
+			clean_letter = unicodedata.normalize('NFD', letter).encode('ascii', 'ignore').decode("utf-8")
 
 		regular_alphabet = " abcdefghijklmnñopqrstuvwxyz"
 		braille_alphabet = [[0,0,0,0,0,0],[1,0,0,0,0,0],[1,1,0,0,0,0],[1,0,0,1,0,0],[1,0,0,1,1,0],[1,0,0,0,1,0],[1,1,0,1,0,0],[1,1,0,1,1,0],[1,1,0,0,1,0],[0,1,0,1,0,0],[0,1,0,1,1,0],[1,0,1,0,0,0],[1,1,1,0,0,0],[1,0,1,1,0,0],[1,0,1,1,1,0],[1,1,0,1,1,1],[1,0,1,0,1,0],[1,1,1,1,0,0],[1,1,1,1,1,0],[1,1,1,0,1,0],[0,1,1,1,0,0],[0,1,1,1,1,0],[1,0,1,0,0,1],[1,1,1,0,0,1],[0,1,0,1,1,1],[1,0,1,1,0,1],[1,0,1,1,1,1],[1,0,1,0,1,1]]
 
 		braille_dictionary = dict(zip(regular_alphabet, braille_alphabet))
-
-		return braille_dictionary[letter]
+		return braille_dictionary[clean_letter]
 
 	def trigger(self, dot_pattern: list):
 		"""Activate the braille cell according to the cell parameters and the dot pattern
