@@ -1,3 +1,5 @@
+"""Create a cell object to control a braille cell through pwm signals in the gpio ports (BCM) in the raspberry pi zero."""
+
 import pigpio as GPIO
 import math
 import time
@@ -5,11 +7,39 @@ import random
 import unicodedata
 from typing import Union
 
-# This code uses BCM pins
-# Tested on python 3.5.3
-
 class new_cell:
+	"""Control a braille cell through pwm signals in the gpio ports (BCM)
 
+	Attributes
+	-------
+	braille_pins: dict
+		Dictionary with the BCM pins used to control the dots in the braille cell, by default {"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}
+	
+	power: int(1 to 5)
+		Integer indicating in a scall from 1 to 5 the braille cell vibration power, by default 5
+
+	time_on: float(0.5 to inf)
+		Activation signal time.
+
+	time_off: float(0.5 to inf)
+		Time between one activation signal and another one
+
+	signal_type: int(1 to 8)
+		Activation signal type, by default 1
+			1 - Square signal
+			2 - Triangle signal
+			3 - Ramp signal
+			4 - Exponential signal
+			5 - logarithmic signal
+			6 - Sine signal
+			7 - Click signal (logarithmic + exponential)
+			8 - Reverse click signal (exponential + logarithmic)
+
+	Methods
+	-------
+	[type]
+		[description]
+	"""
 	# The default phyisical pins are 12, 7, 11, 13, 15, 16 and 18
 	# The first value is the signal BCM pin (pwm) then the next values are the vibrator BCM pins from 1 to 6
 	def __init__(self, braille_pins: dict={"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}, power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
@@ -57,7 +87,38 @@ class new_cell:
 		print(f"\nPinout\n{self.braille_pins}\n")
 
 		return self.braille_pins
-		
+
+	def parameters(self, power: int=None, time_on: float=None, time_off: float=None, signal_type: int=None):
+		"""Change braille cell attributes  
+
+		Parameters
+		----------
+		power: int(1 to 5)
+		Integer indicating in a scall from 1 to 5 the braille cell vibration power, by default 5
+
+		time_on: float(0.5 to inf)
+			Activation signal time.
+
+		time_off: float(0.5 to inf)
+			Time between one activation signal and another one
+
+		signal_type: int(1 to 8)
+			Activation signal type, by default 1
+				1 - Square signal
+				2 - Triangle signal
+				3 - Ramp signal
+				4 - Exponential signal
+				5 - logarithmic signal
+				6 - Sine signal
+				7 - Click signal (logarithmic + exponential)
+				8 - Reverse click signal (exponential + logarithmic)
+
+		Returns
+		-------
+		[type]
+			[description]
+		"""
+
 	@staticmethod
 	def clamp(value: Union[int, float]) -> Union[int, float]:
 		"""Limitate the input value between 255 and 0.
@@ -472,7 +533,7 @@ class new_cell:
 		dot_pattern : list
 			Boolean braille pattern where 1 means active and zero means unactive, Ex. [1, 0, 1, 1, 0, 0]
 		"""
-		
+
 		if self.signal_type == 1:
 			self.signal_square(dot_pattern)
 			
@@ -480,22 +541,22 @@ class new_cell:
 			self.signal_triangle(dot_pattern)
 			
 		elif self.signal_type == 3:
-			self.signal_sine(dot_pattern)
-			
+			self.signal_ramp(dot_pattern)
+						
 		elif self.signal_type == 4:
-			self.signal_log(dot_pattern)
-			
-		elif self.signal_type == 5:
 			self.signal_exp(dot_pattern)
 			
+		elif self.signal_type == 5:
+			self.signal_log(dot_pattern)
+			
 		elif self.signal_type == 6:
-			self.signal_click(dot_pattern)
+			self.signal_sine(dot_pattern)			
 
 		elif self.signal_type == 7:			
-			self.signal_revclick(dot_pattern)	
+			self.signal_click(dot_pattern)
 
 		elif self.signal_type == 8:			
-			self.signal_ramp(dot_pattern)			
+			self.signal_revclick(dot_pattern)			
 		else:
 			print("ERROR: Wrong signal selector")
 
