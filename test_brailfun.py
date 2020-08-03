@@ -9,14 +9,14 @@ class test_brailfun(unittest.TestCase):
         testcase = [-5, 0, 140, 73.25, 255, 302]
         expected = [0, 0, 140, 73.25, 255, 255]
         for index, _ in enumerate(testcase):
-            self.assertEqual(testing_cell.clamp(testcase[index]), expected[index])
+            self.assertEqual(testing_cell._clamp(testcase[index]), expected[index])
 
     def test_02_clamp(self):
         testcase = ["a", ["a"], {"a"}, set("a"), ("a")]
         expected = []
         for index, _ in enumerate(testcase):
             with self.assertRaises(TypeError):
-                testing_cell.clamp(testcase[index])
+                testing_cell._clamp(testcase[index])
 
     def test_random_letter(self):
         testcase = "abcdefghijklmnñopqrstuvwxyz"
@@ -26,7 +26,7 @@ class test_brailfun(unittest.TestCase):
         testcase = [" ","a", "j", "s", "w", "á", "ñ"]
         expected = [[0,0,0,0,0,0],[1,0,0,0,0,0], [0,1,0,1,1,0], [0,1,1,1,0,0], [0,1,0,1,1,1], [1,0,0,0,0,0], [1,1,0,1,1,1]]
         for index, _ in enumerate(testcase):
-            self.assertEqual(testing_cell.translator(testcase[index]), expected[index])
+            self.assertEqual(testing_cell._translator(testcase[index]), expected[index])
 
     def test_01_pinout(self):
         testcase = testing_cell.pinout(signal_pin=4, d3=23, d5=12)
