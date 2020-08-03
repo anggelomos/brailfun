@@ -147,7 +147,7 @@ class new_cell:
 			self.signal_type = signal_type
 
 	@staticmethod
-	def clamp(value: Union[int, float]) -> Union[int, float]:
+	def _clamp(value: Union[int, float]) -> Union[int, float]:
 		"""Limitate the input value between 255 and 0.
 
 		Parameters
@@ -168,12 +168,7 @@ class new_cell:
 		else:
 			return value
 
-	@classmethod
-	def close(cls):
-		"""Stop pigpio session."""
-		cls.pi.stop()
-
-	def signal_square(self, braille_pattern: list) -> int:
+	def _signal_square(self, braille_pattern: list) -> int:
 		"""Activate a braille pattern with a square signal for time_on seconds and then waits for time_off seconds.
 
 		Parameters
@@ -206,7 +201,7 @@ class new_cell:
 
 		return signal_value
 
-	def signal_triangle(self, braille_pattern: list) -> list:
+	def _signal_triangle(self, braille_pattern: list) -> list:
 		"""Activate a braille pattern with a triangle signal for time_on seconds and then waits for time_off seconds.
 
 		Parameters
@@ -235,7 +230,7 @@ class new_cell:
 			else:
 				signal_value = (255*(self.power/5.0))-(255*(self.power/5.0))/(self.time_on/2.0)*(time.time()-t_ini1)
 			
-			signal_value = new_cell.clamp(signal_value)
+			signal_value = new_cell._clamp(signal_value)
 			signal.append(signal_value)
 			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
@@ -249,7 +244,7 @@ class new_cell:
 
 		return signal
 
-	def signal_ramp(self, braille_pattern: list) -> list:
+	def _signal_ramp(self, braille_pattern: list) -> list:
 		"""Activate a braille pattern with a ramp signal for time_on seconds and then waits for time_off seconds.
 
 		Parameters
@@ -274,7 +269,7 @@ class new_cell:
 		while time.time() <= (t_ini + self.time_on):
 			signal_value = (255*(self.power/5.0))/(self.time_on)*(time.time()-t_ini)
 
-			signal_value = new_cell.clamp(signal_value)
+			signal_value = new_cell._clamp(signal_value)
 			signal.append(signal_value)
 			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 					
@@ -289,7 +284,7 @@ class new_cell:
 
 		return signal
 
-	def signal_sine(self, braille_pattern: list) -> list:
+	def _signal_sine(self, braille_pattern: list) -> list:
 		"""Activate a braille pattern with a sine signal (positive side) for time_on seconds and then waits for time_off seconds.
 
 		Parameters
@@ -314,7 +309,7 @@ class new_cell:
 		while time.time() <= (t_ini + self.time_on):
 			signal_value = (255*(self.power/5.0))*math.sin((math.pi/self.time_on)*(time.time()-t_ini))
 			
-			signal_value = new_cell.clamp(signal_value)
+			signal_value = new_cell._clamp(signal_value)
 			signal.append(signal_value)
 			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 
@@ -328,7 +323,7 @@ class new_cell:
 
 		return signal
 
-	def signal_log(self, braille_pattern: list) -> list:
+	def _signal_log(self, braille_pattern: list) -> list:
 		"""Activate a braille pattern with a logarithmic signal for time_on seconds and then waits for time_off seconds.
 
 		Parameters
@@ -357,7 +352,7 @@ class new_cell:
 					
 			signal_value = (255.0*math.log10(t_current))*(self.power/5.0)
 			
-			signal_value = new_cell.clamp(signal_value)
+			signal_value = new_cell._clamp(signal_value)
 			signal.append(signal_value)
 			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
@@ -371,7 +366,7 @@ class new_cell:
 
 		return signal
 
-	def signal_exp(self, braille_pattern: list) -> list:
+	def _signal_exp(self, braille_pattern: list) -> list:
 		"""Activate a braille pattern with a exponential signal for time_on seconds and then waits for time_off seconds.
 
 		Parameters
@@ -406,7 +401,7 @@ class new_cell:
 					
 			signal_value = (25.5*math.exp(t_current))*(self.power/5.0)
 			
-			signal_value = new_cell.clamp(signal_value)
+			signal_value = new_cell._clamp(signal_value)
 			signal.append(signal_value)
 			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
@@ -420,7 +415,7 @@ class new_cell:
 
 		return signal
 
-	def signal_click(self, braille_pattern: list) -> list:
+	def _signal_click(self, braille_pattern: list) -> list:
 		"""Activate a braille pattern with a click signal (first half logarithmic, second half exponential) for time_on seconds and then waits for time_off seconds.
 
 		Parameters
@@ -453,7 +448,7 @@ class new_cell:
 				t_current = (2*((-math.log(10))-math.log(10))/(self.time_on))*(time.time() - t_ini1) + math.log(10) # In this line we remap the time so that is goes from -ln(10) to ln(10)
 				signal_value = (25.5*math.exp(t_current))*(self.power/5.0)
 					
-			signal_value = new_cell.clamp(signal_value)
+			signal_value = new_cell._clamp(signal_value)
 			signal.append(signal_value)
 			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
@@ -467,7 +462,7 @@ class new_cell:
 
 		return signal
 
-	def signal_revclick(self, braille_pattern: list) -> list:
+	def _signal_revclick(self, braille_pattern: list) -> list:
 		"""Activate a braille pattern with a click signal (first half exponential, second half logarithmic) for time_on seconds and then waits for time_off seconds.
 
 		Parameters
@@ -498,7 +493,7 @@ class new_cell:
 				t_current = (2*(1-10)/(self.time_on))*(time.time() - t_ini1) + 10
 				signal_value = (255.0*math.log10(t_current))*(self.power/5.0)
 					
-			signal_value = new_cell.clamp(signal_value)
+			signal_value = new_cell._clamp(signal_value)
 			signal.append(signal_value)
 			new_cell.pi.set_PWM_dutycycle(self.braille_pins["signal_pin"], signal_value)
 			
@@ -511,22 +506,9 @@ class new_cell:
 		time.sleep(self.time_off)
 
 		return signal
-
-	@staticmethod
-	def random_letter() -> str:
-		"""Return a random letter from the alphabet including ñ
-
-		Returns
-		-------
-		random_letter: str
-			Random letter from the alphabet including ñ
-		"""
-
-		alfabeto_regular = "abcdefghijklmnñopqrstuvwxyz"
-		return alfabeto_regular[random.randint(0,26)]
   
 	@staticmethod
-	def translator(letter: str) -> list:
+	def _translator(letter: str) -> list:
 		"""Translate a letter to a braille dot pattern, Ex. "a" -> [1, 0, 0, 0, 0, 0], " " -> [0, 0, 0, 0, 0, 0]
 
 		Parameters
@@ -552,7 +534,7 @@ class new_cell:
 		braille_dictionary = dict(zip(regular_alphabet, braille_alphabet))
 		return braille_dictionary[clean_letter]
 
-	def trigger(self, dot_pattern: list):
+	def _trigger(self, dot_pattern: list):
 		"""Activate the braille cell according to the cell parameters and the dot pattern
 		
 		Parameters
@@ -562,28 +544,28 @@ class new_cell:
 		"""
 
 		if self.signal_type == 1:
-			self.signal_square(dot_pattern)
+			self._signal_square(dot_pattern)
 			
 		elif self.signal_type == 2:
-			self.signal_triangle(dot_pattern)
+			self._signal_triangle(dot_pattern)
 			
 		elif self.signal_type == 3:
-			self.signal_ramp(dot_pattern)
+			self._signal_ramp(dot_pattern)
 						
 		elif self.signal_type == 4:
-			self.signal_exp(dot_pattern)
+			self._signal_exp(dot_pattern)
 			
 		elif self.signal_type == 5:
-			self.signal_log(dot_pattern)
+			self._signal_log(dot_pattern)
 			
 		elif self.signal_type == 6:
-			self.signal_sine(dot_pattern)			
+			self._signal_sine(dot_pattern)			
 
 		elif self.signal_type == 7:			
-			self.signal_click(dot_pattern)
+			self._signal_click(dot_pattern)
 
 		elif self.signal_type == 8:			
-			self.signal_revclick(dot_pattern)			
+			self._signal_revclick(dot_pattern)			
 		else:
 			print("ERROR: Wrong signal selector")
 
@@ -593,7 +575,7 @@ class new_cell:
 		for active_dot in range(6):
 			vector_generador = [0,0,0,0,0,0]
 			vector_generador[active_dot] = 1
-			self.trigger(vector_generador)
+			self._trigger(vector_generador)
 		
 	def writer(self, text: str):
 		"""Write the text in the braille cell activating consecutively each alphanumer letter.
@@ -619,4 +601,4 @@ class new_cell:
 		for dot in range(6):
 			vector_random[dot] = random.randint(0,1)
 		
-		self.trigger(vector_random)
+		self._trigger(vector_random)
