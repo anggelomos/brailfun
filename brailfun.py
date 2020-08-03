@@ -75,6 +75,10 @@ class new_cell:
 			pi.set_mode(pin, GPIO.OUTPUT)
 			pi.write(pin, 0)
 
+	@classmethod
+	def close(cls):
+		"""Stop pigpio session."""
+		cls.pi.stop()
 
 	def pinout(self, signal_pin: int=None, d1: int=None, d2: int=None, d3: int=None, d4: int=None, d5: int=None, d6: int=None) -> dict:
 		"""Assign and initialize the braille cell bcm gpio pins.
