@@ -505,15 +505,21 @@ class new_cell:
 			vector_generador[active_dot] = 1
 			self.trigger(vector_generador)
 		
+	def writer(self, text: str):
+		"""Write the text in the braille cell activating consecutively each alphanumer letter.
 
-	def writer(self, sentence):
+		Parameters
+		----------
+		text : str
+			String to be written in the braille cell
+		"""
 		
-		# This function writes the sentence in the braille cell, the sentence can be a letter, a word or a paragraph.
-		
-		for letter in sentence:
-			caracter_braille = self.translator(letter)
-			self.trigger(caracter_braille)
-
+		for letter in text:
+			if letter.isalpha() or letter == " ":
+				caracter_braille = self.translator(letter)
+				self.trigger(caracter_braille)
+			else:
+				pass
 
 	def random_vibration(self):
 		
