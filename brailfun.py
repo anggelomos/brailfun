@@ -524,13 +524,11 @@ class new_cell:
 				pass
 
 	def random_vibration(self):
-		
-		# This function actives dots randomly in the cell
+		"""Generate a random braille pattern and activate it in the braille cell."""
 		
 		vector_random = [0,0,0,0,0,0]
 		
-		for dot in range(0,6):
+		for dot in range(6):
 			vector_random[dot] = random.randint(0,1)
 		
 		self.trigger(vector_random)
-
