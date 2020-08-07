@@ -65,7 +65,7 @@ class NewCell:
 		Generate a random braille pattern and activate it in the braille cell.
 	"""
 
-	def __init__(self, braille_pins: dict={"signal_pin":18, "d1": 4, "d2": 17, "d3": 27, "d4": 22, "d5": 23, "d6": 24}, power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
+	def __init__(self, braille_pins: dict={"signal_pin":18, "d1": 22, "d2": 23, "d3": 24, "d4": 27, "d5": 4, "d6": 17}, power: int=5, time_on: float=3, time_off: float=1, signal_type: int=1):
 		self.braille_pins = braille_pins
 		self.power = power
 		self.time_on = time_on
