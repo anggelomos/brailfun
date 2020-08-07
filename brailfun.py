@@ -615,7 +615,7 @@ class NewCell:
 
 		return letter
 
-	def random_vibration(self):
+	def random_vibration(self) -> list:
 		"""Generate a random braille pattern and activate it in the braille cell."""
 		
 		vector_random = [0,0,0,0,0,0]
@@ -624,3 +624,5 @@ class NewCell:
 			vector_random[dot] = random.randint(0,1)
 		
 		self.trigger(vector_random)
+
+		return vector_random
