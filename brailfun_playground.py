@@ -35,7 +35,33 @@ while user_command[0] != "e":
 
         braille_cell.pinout(new_pinout["signal_pin"], new_pinout["d1"], new_pinout["d2"], new_pinout["d3"], new_pinout["d4"], new_pinout["d5"], new_pinout["d6"])
 
-    
+    if user_command[0] == "pa":
+        new_parameters = braille_cell.parameters()
+        print(f"\nCurrent parameters {new_parameters}")
+        print("Input the braille cell parameters within the ranges, if you don't want to change a parameter write an *\n\npower(int): 1-5\ntime_on(float): 0.5-infinite\ntime_off(float): 0.5-infinite\nsignal_type(int): 1-8\n")
+
+        for parameter in new_parameters.keys():
+            input_check = False
+            while parameter in ["power", "time_on", "time_off", "signal_type"]:
+                user_input = input(f"{parameter}: ")
+                if user_input == "*":
+                    break
+                
+                user_input = float(user_input)
+                if parameter == "power" and user_input in range(1,6):
+                    input_check = True
+                elif parameter == "time_on" and user_input >= 0.5:
+                    input_check = True
+                elif parameter == "time_off" and user_input >= 0.5:
+                    input_check = True
+                elif parameter == "signal_type" and user_input in range(1,9):
+                    input_check = True
+
+                if input_check:
+                    new_parameters[parameter] = user_input
+                    break
+        
+        braille_cell.parameters(int(new_parameters["power"]), new_parameters["time_on"], new_parameters["time_off"], int(new_parameters["signal_type"]))
 
 
 braille_cell.close()
