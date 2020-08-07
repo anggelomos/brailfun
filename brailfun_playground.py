@@ -63,6 +63,12 @@ while user_command[0] != "e":
         
         braille_cell.parameters(int(new_parameters["power"]), new_parameters["time_on"], new_parameters["time_off"], int(new_parameters["signal_type"]))
 
+    if user_command[0] == "t":
+        braille_pattern = [0, 0, 0, 0, 0, 0]
+        for active_pin in user_command[1]:
+            braille_pattern[int(active_pin)-1] = 1
+
+        braille_cell.trigger(braille_pattern)
 
 braille_cell.close()
 os.system('sudo killall pigpiod')
