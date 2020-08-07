@@ -55,6 +55,9 @@ class NewCell:
 	writer
 		Write the text in the braille cell activating consecutively each alphanumer letter.
 
+	generator
+		Activate each dot in the braille cell consecutively.
+
 	random_letter
 		Write a random letter in the braille cell.
 
@@ -573,7 +576,7 @@ class NewCell:
 			print("ERROR: Wrong signal selector")
 
 	def generator(self):
-		"""Activates each dot in the braille cell consecutively."""
+		"""Activate each dot in the braille cell consecutively."""
 		
 		for active_dot in range(6):
 			vector_generador = [0,0,0,0,0,0]
