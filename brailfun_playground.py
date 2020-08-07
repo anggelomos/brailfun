@@ -2,11 +2,16 @@
 
 import os
 os.system("sudo pigpiod")
+import pigpio as GPIO
 import brailfun
 
 braille_cell = brailfun.NewCell(power=3, time_on=1, time_off=0.5, signal_type=1)
-
+pigpio_controller = braille_cell.pi
 braille_cell.init()
+
+pin_indicador_encendido = 25
+pigpio_controller.set_mode(pin_indicador_encendido, GPIO.OUTPUT)
+pigpio_controller.write(pin_indicador_encendido, 1)
 
 user_command = "_"
 
@@ -70,5 +75,6 @@ while user_command[0] != "e":
 
         braille_cell.trigger(braille_pattern)
 
+pigpio_controller.write(pin_indicador_encendido, 0)
 braille_cell.close()
 os.system('sudo killall pigpiod')
