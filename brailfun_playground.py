@@ -78,6 +78,9 @@ while user_command[0] != "e":
     if user_command[0] == "w":
         braille_cell.writer(user_command[1])
 
+    if user_command[0] == "g":
+        braille_cell.generator()
+
 pigpio_controller.write(pin_indicador_encendido, 0)
 braille_cell.close()
 os.system('sudo killall pigpiod')
