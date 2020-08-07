@@ -80,6 +80,10 @@ while user_command[0] != "e":
 
     if user_command[0] == "g":
         braille_cell.generator()
+    
+    if user_command[0] == "rl":
+        letter,_ = braille_cell.random_letter()
+        print(f"\nletter: {letter}\n")
 
 pigpio_controller.write(pin_indicador_encendido, 0)
 braille_cell.close()
