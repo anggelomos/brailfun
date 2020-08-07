@@ -85,6 +85,10 @@ while user_command[0] != "e":
         letter,_ = braille_cell.random_letter()
         print(f"\nletter: {letter}\n")
 
+    if user_command[0] == "rp":
+        pattern = braille_cell.random_pattern()
+        print(f"\npattern: {pattern}\n")  
+
 pigpio_controller.write(pin_indicador_encendido, 0)
 braille_cell.close()
 os.system('sudo killall pigpiod')
