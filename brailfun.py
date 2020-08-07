@@ -613,7 +613,7 @@ class NewCell:
 		braille_letter = self._translator(letter)
 		self.trigger(braille_letter)
 
-		return letter
+		return [letter, braille_letter]
 
 	def random_vibration(self) -> list:
 		"""Generate a random braille pattern and activate it in the braille cell."""
