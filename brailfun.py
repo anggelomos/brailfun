@@ -354,9 +354,12 @@ class NewCell:
 
 		signal = []
 		t_ini = time.time()
-		
-		
-		
+
+		for index, value in enumerate(self.braille_pins.values()):
+			if index == 0:
+				continue
+			NewCell.pi.set_PWM_dutycycle(value, 255*braille_pattern[index-1])
+	
 		while time.time() <= (t_ini + self.time_on):
 			if time.time() < (t_ini + self.time_on/2.0):
 				t_current = (2*(10-1)/(self.time_on))*(time.time() - t_ini) + 1 	
