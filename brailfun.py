@@ -115,7 +115,7 @@ class NewCell:
 
 		return self.braille_pins
 
-	def parameters(self, power: int=None, time_on: float=None, time_off: float=None, signal_type: int=None):
+	def parameters(self, power: int=None, time_on: float=None, time_off: float=None, signal_type: int=None) -> dict:
 		"""Change braille cell attributes  
 
 		Parameters
@@ -139,7 +139,13 @@ class NewCell:
 				6 - Sine signal
 				7 - Click signal (logarithmic + exponential)
 				8 - Reverse click signal (exponential + logarithmic)
+		
+		Returns
+		-------
+		braille_parameters: dict
+			Braille cell parameters, Ex. {"power":5, "time_on":12, "time_off":3, "signal_type":7}.
 		"""
+
 		if isinstance(power, int):
 			self.power = power
 		
@@ -153,7 +159,6 @@ class NewCell:
 			self.signal_type = signal_type
 		
 		braille_parameters = {"power":power, "time_on":time_on, "time_off":time_off, "signal_type":signal_type}
-
 		return braille_parameters
 
 	@staticmethod
