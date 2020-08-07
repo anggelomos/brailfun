@@ -151,6 +151,10 @@ class NewCell:
 
 		if isinstance(signal_type, int):
 			self.signal_type = signal_type
+		
+		braille_parameters = {"power":power, "time_on":time_on, "time_off":time_off, "signal_type":signal_type}
+
+		return braille_parameters
 
 	@staticmethod
 	def _clamp(value: Union[int, float]) -> Union[int, float]:
